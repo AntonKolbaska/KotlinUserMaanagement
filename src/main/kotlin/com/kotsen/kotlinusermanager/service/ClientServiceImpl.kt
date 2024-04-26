@@ -6,6 +6,8 @@ import com.kotsen.kotlinusermanager.entity.Client
 import com.kotsen.kotlinusermanager.repository.ClientRepository
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
+import java.net.URL
+import org.json.JSONObject
 
 @Service
 class ClientServiceImpl(var clientRepository: ClientRepository) {
@@ -55,21 +57,34 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
                 }.getOrNull()
     }
 
-    fun getAllClients(): List<ClientResponseDTO> {
-        val clients = clientRepository.findAllClients()
-        return clients.map {
-            ClientResponseDTO(
-                    id = it.id!!,
-                    firstName = it.firstName,
-                    lastName = it.lastName,
-                    email = it.email,
-                    job = it.job,
-                    position = it.position
-            )
-        }
-    }
+//    fun getAllClients(): List<ClientResponseDTO> {
+//        val clients = clientRepository.findAllClients()
+//        return clients.map {
+//            ClientResponseDTO(
+//                    id = it.id!!,
+//                    firstName = it.firstName,
+//                    lastName = it.lastName,
+//                    email = it.email,
+//                    job = it.job,
+//                    position = it.position
+//            )
+//        }
+//    }
 
     fun deleteClient(id: Long) {
         clientRepository.deleteById(id)
+    }
+
+    private fun defineClientGender(firstName: String): String {
+        val apiUrl = "https://api.genderize.io/?name=$firstName"
+        val response = URL(apiUrl).readText()
+        val json = JSONObject(response)
+        val probability = json.getDouble("probability")
+
+        if (probability >= 0.8) {
+            return json.getString("gender")
+        } else {
+            throw Exception("Gender not detected")
+        }
     }
 }
