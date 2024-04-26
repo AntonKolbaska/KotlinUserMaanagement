@@ -21,6 +21,20 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
                 email = save.email)
     }
 
+    fun updateClient(newClientId: Long, newClient: ClientRequestDTO): ClientResponseDTO {
+        return clientRepository.findById(newClientId)
+                .map {
+                    val save = clientRepository.save(Client(id = it.id,
+                            firstName = it.firstName,
+                            lastName = it.lastName,
+                            email = it.email))
+                    ClientResponseDTO(id = save.id!!,
+                            firstName = save.firstName,
+                            lastName = save.lastName,
+                            email = save.email)
+                }.orElseGet(null)
+    }
+
     fun getClient(id: Long): ClientResponseDTO? {
         return clientRepository.findById(id)
                 .map {
@@ -43,7 +57,7 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
         }
     }
 
-    fun deleteClient(id: Long){
+    fun deleteClient(id: Long) {
         clientRepository.deleteById(id)
     }
 }
