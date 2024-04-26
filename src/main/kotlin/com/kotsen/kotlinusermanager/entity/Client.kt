@@ -10,6 +10,6 @@ data class Client(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long?,
-        var name: String,
-        var description: String,
-        var done: Boolean)
+        var firstName: String,
+        var lastName: String,
+        var email: String)
