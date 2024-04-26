@@ -12,4 +12,6 @@ data class Client(
         var id: Long?,
         var firstName: String,
         var lastName: String,
-        var email: String)
+        var email: String,
+        var job: String?,
+        var position: String?)

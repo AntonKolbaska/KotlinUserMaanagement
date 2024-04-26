@@ -14,11 +14,15 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
                 Client(id = null,
                         firstName = newClient.fistName,
                         lastName = newClient.lastName,
-                        email = newClient.email))
+                        email = newClient.email,
+                        job = newClient.job,
+                        position = newClient.position))
         return ClientResponseDTO(id = save.id!!,
                 firstName = save.firstName,
                 lastName = save.lastName,
-                email = save.email)
+                email = save.email,
+                job = save.job,
+                position = save.position)
     }
 
     fun updateClient(newClientId: Long, newClient: ClientRequestDTO): ClientResponseDTO {
@@ -27,11 +31,15 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
                     val save = clientRepository.save(Client(id = it.id,
                             firstName = it.firstName,
                             lastName = it.lastName,
-                            email = it.email))
+                            email = it.email,
+                            job = it.job,
+                            position = it.position))
                     ClientResponseDTO(id = save.id!!,
                             firstName = save.firstName,
                             lastName = save.lastName,
-                            email = save.email)
+                            email = save.email,
+                            job = save.job,
+                            position = save.position)
                 }.orElseGet(null)
     }
 
@@ -41,7 +49,9 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
                     ClientResponseDTO(id = it.id!!,
                             firstName = it.firstName,
                             lastName = it.lastName,
-                            email = it.email)
+                            email = it.email,
+                            job = it.job,
+                            position = it.position)
                 }.getOrNull()
     }
 
@@ -52,7 +62,9 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
                     id = it.id!!,
                     firstName = it.firstName,
                     lastName = it.lastName,
-                    email = it.email
+                    email = it.email,
+                    job = it.job,
+                    position = it.position
             )
         }
     }
