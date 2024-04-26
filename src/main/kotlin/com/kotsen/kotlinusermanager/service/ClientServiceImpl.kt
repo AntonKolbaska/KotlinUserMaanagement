@@ -57,19 +57,19 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
                 }.getOrNull()
     }
 
-//    fun getAllClients(): List<ClientResponseDTO> {
-//        val clients = clientRepository.findAllClients()
-//        return clients.map {
-//            ClientResponseDTO(
-//                    id = it.id!!,
-//                    firstName = it.firstName,
-//                    lastName = it.lastName,
-//                    email = it.email,
-//                    job = it.job,
-//                    position = it.position
-//            )
-//        }
-//    }
+    fun getAllClients(): List<ClientResponseDTO> {
+        val clients = clientRepository.findAll()
+        return clients.map {
+            ClientResponseDTO(
+                    id = it.id!!,
+                    firstName = it.firstName,
+                    lastName = it.lastName,
+                    email = it.email,
+                    job = it.job,
+                    position = it.position
+            )
+        }
+    }
 
     fun deleteClient(id: Long) {
         clientRepository.deleteById(id)

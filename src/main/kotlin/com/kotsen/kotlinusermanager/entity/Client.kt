@@ -5,7 +5,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 
-@Entity(name = "client")
+@Entity(name = "clients")
 data class Client(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)

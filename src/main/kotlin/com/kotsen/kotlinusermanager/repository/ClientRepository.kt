@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ClientRepository : JpaRepository<Client, Long>{
-//    fun findAllClients(): List<Client>
+    override fun findAll(): List<Client>
 }

@@ -26,10 +26,10 @@ class ClientController (var clientServiceImpl: ClientServiceImpl){
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found")
     }
 
-//    @GetMapping("/list")
-//    fun getClientList(): List<ClientResponseDTO>{
-//        return clientServiceImpl.getAllClients()
-//    }
+    @GetMapping("/list")
+    fun getClientList(): List<ClientResponseDTO>{
+        return clientServiceImpl.getAllClients()
+    }
 
     @DeleteMapping("/{id}")
     fun deleteClient(@PathVariable id: Long){
