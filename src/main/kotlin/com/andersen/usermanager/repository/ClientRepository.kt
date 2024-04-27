@@ -1,10 +1,10 @@
-package com.kotsen.kotlinusermanager.repository
+package com.andersen.usermanager.repository
 
-import com.kotsen.kotlinusermanager.entity.Client
+import com.andersen.usermanager.entity.Client
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ClientRepository : JpaRepository<Client, Long>{
+interface ClientRepository : JpaRepository<Client, Long> {
     override fun findAll(): List<Client>
 }

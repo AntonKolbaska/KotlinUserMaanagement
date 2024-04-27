@@ -1,4 +1,4 @@
-package com.kotsen.kotlinusermanager
+package com.andersen.usermanager
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
