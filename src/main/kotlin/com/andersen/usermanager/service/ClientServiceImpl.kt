@@ -118,6 +118,27 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
         }
     }
 
+    fun getClientsByNames(firstName: String, lastName : String) : List<ClientResponseDTO>{
+        val clients = clientRepository.findByFirstNameAndLastName(firstName, lastName)
+        if (clients.isEmpty())
+            throw NoClientsExistException(
+                ExceptionMessage.NO_CLIENTS_EXIST
+                    .toString()
+            )
+        return clients.map {
+            ClientResponseDTO(
+                id = it.id!!,
+                firstName = it.firstName,
+                lastName = it.lastName,
+                email = it.email,
+                gender = it.gender,
+                job = it.job,
+                position = it.position
+            )
+        }
+    }
+
+    @Transactional
     fun deleteClient(id: Long) {
         clientRepository.deleteById(id)
     }

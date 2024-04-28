@@ -31,6 +31,13 @@ class ClientController(var clientServiceImpl: ClientServiceImpl) {
         return clientServiceImpl.getAllClients()
     }
 
+    @GetMapping("/search/name")
+    fun getClientListByName(
+        @RequestParam firstname: String,
+        @RequestParam lastname: String): List<ClientResponseDTO> {
+        return clientServiceImpl.getClientsByNames(firstname, lastname)
+    }
+
     @DeleteMapping("/{id}")
     fun deleteClient(@PathVariable id: Long) {
         return clientServiceImpl.deleteClient(id)
