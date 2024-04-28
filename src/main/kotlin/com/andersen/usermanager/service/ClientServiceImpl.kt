@@ -54,7 +54,25 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
     @Transactional
     fun updateClient(clientId: Long, clientDTO: ClientRequestDTO): ClientResponseDTO {
         val existingClient = clientRepository.findById(clientId)
-            .orElseThrow()
+            .orElseThrow {
+            ClientNotFoundException(
+                ExceptionMessage.CLIENT_NOT_FOUND
+                    .toString()
+                    .format(clientId)
+            )
+        }
+
+        val existingClientByEmail = clientRepository.findByEmail(clientDTO.email)
+        if (existingClientByEmail != null && existingClientByEmail.id != clientId) {
+            throw EmailAlreadyRegisteredException(
+                ExceptionMessage.EMAIL_ALREADY_USED
+                    .toString()
+                    .format(clientDTO.email)
+            )
+        }
+
+        val originalFirstName = existingClient.firstName
+        val originalGender = existingClient.gender
 
         existingClient.apply {
             firstName = clientDTO.firstName
@@ -62,6 +80,13 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
             email = clientDTO.email
             job = clientDTO.job
             position = clientDTO.position
+        }
+
+        if (originalFirstName != clientDTO.firstName) {
+            val gender = clientDTO.gender ?: Gender.valueOf(defineClientGender(clientDTO.firstName))
+            existingClient.gender = gender
+        } else {
+            existingClient.gender = originalGender
         }
 
         val updatedClient = clientRepository.save(existingClient)
