@@ -1,6 +1,7 @@
 package com.andersen.usermanager.exception.handler
 
 import com.andersen.usermanager.exception.ClientNotFoundException
+import com.andersen.usermanager.exception.EmailAlreadyRegisteredException
 import com.andersen.usermanager.exception.GenderUndefinedException
 import com.andersen.usermanager.exception.NoClientsExistException
 import org.springframework.http.HttpStatus
@@ -22,6 +23,11 @@ class ExceptionsHandler {
 
     @ExceptionHandler
     fun handleGenderUndefinedException(exception: GenderUndefinedException): ResponseEntity<String> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.message)
+    }
+
+    @ExceptionHandler
+    fun handleEmailAlreadyRegisteredException(exception: EmailAlreadyRegisteredException): ResponseEntity<String> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.message)
     }
 }

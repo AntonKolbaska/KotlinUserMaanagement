@@ -5,26 +5,37 @@ import com.andersen.usermanager.dto.response.ClientResponseDTO
 import com.andersen.usermanager.entity.Client
 import com.andersen.usermanager.entity.Gender
 import com.andersen.usermanager.exception.ClientNotFoundException
+import com.andersen.usermanager.exception.EmailAlreadyRegisteredException
 import com.andersen.usermanager.exception.GenderUndefinedException
 import com.andersen.usermanager.exception.NoClientsExistException
 import com.andersen.usermanager.exception.message.ExceptionMessage
 import com.andersen.usermanager.repository.ClientRepository
 import org.springframework.stereotype.Service
-import kotlin.jvm.optionals.getOrNull
 import java.net.URL
 import org.json.JSONObject
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ClientServiceImpl(var clientRepository: ClientRepository) {
+    @Transactional
     fun createClient(newClientDTO: ClientRequestDTO): ClientResponseDTO {
+        val existingClient = clientRepository.findByEmail(newClientDTO.email)
+        if (existingClient != null) {
+            throw EmailAlreadyRegisteredException(
+                ExceptionMessage.EMAIL_ALREADY_USED
+                    .toString()
+                    .format(newClientDTO.email)
+            )
+        }
+
+        val gender = newClientDTO.gender ?: Gender.valueOf(defineClientGender(newClientDTO.firstName))
         val save = clientRepository.save(
             Client(
                 id = null,
-                firstName = newClientDTO.fistName,
+                firstName = newClientDTO.firstName,
                 lastName = newClientDTO.lastName,
                 email = newClientDTO.email,
-                gender = Gender.valueOf(defineClientGender(newClientDTO.fistName)),
+                gender = gender,
                 job = newClientDTO.job,
                 position = newClientDTO.position
             )
@@ -46,7 +57,7 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
             .orElseThrow()
 
         existingClient.apply {
-            firstName = clientDTO.fistName
+            firstName = clientDTO.firstName
             lastName = clientDTO.lastName
             email = clientDTO.email
             job = clientDTO.job

@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ClientRepository : JpaRepository<Client, Long> {
     override fun findAll(): List<Client>
+    fun findByEmail(email: String) : Client?
 }
