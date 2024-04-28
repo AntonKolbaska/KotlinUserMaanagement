@@ -19,3 +19,12 @@ spring:
       enabled: true
       settings:
         web-allow-others: true
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  #    config-url: /user-account-management/openapi/swagger-config
+  #    url: /user-account-management/openapi
+  api-docs:
+    path: /openapi

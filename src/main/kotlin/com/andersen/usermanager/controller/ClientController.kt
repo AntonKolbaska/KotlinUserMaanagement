@@ -1,45 +1,34 @@
 package com.andersen.usermanager.controller
 
+import com.andersen.usermanager.configuration.swagger.SwaggerService
 import com.andersen.usermanager.dto.request.ClientRequestDTO
 import com.andersen.usermanager.dto.response.ClientResponseDTO
-import com.andersen.usermanager.service.ClientServiceImpl
-import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
+import io.swagger.v3.oas.annotations.Operation
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 
-@RestController
-@RequestMapping("/client")
-class ClientController(var clientServiceImpl: ClientServiceImpl) {
-    @PostMapping("/create")
-    fun createClient(@RequestBody newClient: ClientRequestDTO): ClientResponseDTO {
-        return clientServiceImpl.createClient(newClient)
-    }
+interface ClientController {
+    @Operation(summary = "Create user",
+        description = "Retrieve and save new user information")
+    @SwaggerService
+    fun createClient(@RequestBody newClient: ClientRequestDTO): ClientResponseDTO
 
-    @PutMapping("/update/{id}")
-    fun updateClient(@PathVariable id: Long, @RequestBody newClient: ClientRequestDTO): ClientResponseDTO {
-        return clientServiceImpl.updateClient(id, newClient)
-    }
+    @SwaggerService
+    fun updateClient(@PathVariable id: Long, @RequestBody newClient: ClientRequestDTO): ClientResponseDTO
 
-    @GetMapping("/{id}")
-    fun getClient(@PathVariable id: Long): ClientResponseDTO {
-        return clientServiceImpl.getClient(id)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found")
-    }
+    @SwaggerService
+    fun getClient(@PathVariable id: Long): ClientResponseDTO
 
-    @GetMapping("/list")
-    fun getClientList(): List<ClientResponseDTO> {
-        return clientServiceImpl.getAllClients()
-    }
+    @SwaggerService
+    fun getClientList(): List<ClientResponseDTO>
 
-    @GetMapping("/search/name")
+    @SwaggerService
     fun getClientListByName(
         @RequestParam firstname: String,
-        @RequestParam lastname: String): List<ClientResponseDTO> {
-        return clientServiceImpl.getClientsByNames(firstname, lastname)
-    }
+        @RequestParam lastname: String
+    ): List<ClientResponseDTO>
 
-    @DeleteMapping("/{id}")
-    fun deleteClient(@PathVariable id: Long) {
-        return clientServiceImpl.deleteClient(id)
-    }
+    @SwaggerService
+    fun deleteClient(@PathVariable id: Long)
 }
