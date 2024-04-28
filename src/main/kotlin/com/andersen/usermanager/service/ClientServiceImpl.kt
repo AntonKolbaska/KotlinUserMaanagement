@@ -4,11 +4,16 @@ import com.andersen.usermanager.dto.request.ClientRequestDTO
 import com.andersen.usermanager.dto.response.ClientResponseDTO
 import com.andersen.usermanager.entity.Client
 import com.andersen.usermanager.entity.Gender
+import com.andersen.usermanager.exception.ClientNotFoundException
+import com.andersen.usermanager.exception.GenderUndefinedException
+import com.andersen.usermanager.exception.NoClientsExistException
+import com.andersen.usermanager.exception.message.ExceptionMessage
 import com.andersen.usermanager.repository.ClientRepository
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
 import java.net.URL
 import org.json.JSONObject
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ClientServiceImpl(var clientRepository: ClientRepository) {
@@ -19,7 +24,7 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
                 firstName = newClientDTO.fistName,
                 lastName = newClientDTO.lastName,
                 email = newClientDTO.email,
-                gender = Gender.valueOf(defineClientGender(newClientDTO.fistName).uppercase()),
+                gender = Gender.valueOf(defineClientGender(newClientDTO.fistName)),
                 job = newClientDTO.job,
                 position = newClientDTO.position
             )
@@ -35,6 +40,7 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
         )
     }
 
+    @Transactional
     fun updateClient(clientId: Long, clientDTO: ClientRequestDTO): ClientResponseDTO {
         val existingClient = clientRepository.findById(clientId)
             .orElseThrow()
@@ -72,11 +78,22 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
                     job = it.job,
                     position = it.position
                 )
-            }.getOrNull()
+            }.orElseThrow {
+                ClientNotFoundException(
+                    ExceptionMessage.CLIENT_NOT_FOUND
+                        .toString()
+                        .format(id)
+                )
+            }
     }
 
     fun getAllClients(): List<ClientResponseDTO> {
         val clients = clientRepository.findAll()
+        if (clients.isEmpty())
+            throw NoClientsExistException(
+                ExceptionMessage.NO_CLIENTS_EXIST
+                    .toString()
+            )
         return clients.map {
             ClientResponseDTO(
                 id = it.id!!,
@@ -101,9 +118,13 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
         val probability = json.getDouble("probability")
 
         if (probability >= 0.8) {
-            return json.getString("gender")
+            return json.getString("gender").uppercase()
         } else {
-            throw Exception("Gender not detected")
+            throw GenderUndefinedException(
+                ExceptionMessage.GENDER_NOT_DEFINED
+                    .toString()
+                    .format(firstName)
+            )
         }
     }
 }
