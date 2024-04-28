@@ -3,6 +3,7 @@ package com.andersen.usermanager.service
 import com.andersen.usermanager.dto.request.ClientRequestDTO
 import com.andersen.usermanager.dto.response.ClientResponseDTO
 import com.andersen.usermanager.entity.Client
+import com.andersen.usermanager.entity.Gender
 import com.andersen.usermanager.repository.ClientRepository
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
@@ -18,7 +19,7 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
                 firstName = newClientDTO.fistName,
                 lastName = newClientDTO.lastName,
                 email = newClientDTO.email,
-                gender = defineClientGender(newClientDTO.fistName),
+                gender = Gender.valueOf(defineClientGender(newClientDTO.fistName).uppercase()),
                 job = newClientDTO.job,
                 position = newClientDTO.position
             )

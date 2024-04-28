@@ -1,5 +1,6 @@
 package com.andersen.usermanager.dto.response
 
+import com.andersen.usermanager.entity.Gender
 import com.fasterxml.jackson.annotation.JsonProperty
 
 class ClientResponseDTO(
@@ -13,7 +14,7 @@ class ClientResponseDTO(
     @JsonProperty("email")
     var email: String,
     @JsonProperty("gender")
-    var gender: String,
+    var gender: Gender,
     @JsonProperty("job")
     var job: String?,
     @JsonProperty("position")
