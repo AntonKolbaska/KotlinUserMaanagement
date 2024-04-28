@@ -4,6 +4,8 @@ import com.andersen.usermanager.configuration.swagger.SwaggerService
 import com.andersen.usermanager.dto.request.ClientRequestDTO
 import com.andersen.usermanager.dto.response.ClientResponseDTO
 import io.swagger.v3.oas.annotations.Operation
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -21,13 +23,13 @@ interface ClientController {
     fun getClient(@PathVariable id: Long): ClientResponseDTO
 
     @SwaggerService
-    fun getClientList(): List<ClientResponseDTO>
+    fun getClientList(pageable: Pageable): Page<ClientResponseDTO>
 
     @SwaggerService
-    fun getClientListByName(
+    fun getClientListByName(pageable: Pageable,
         @RequestParam firstname: String,
         @RequestParam lastname: String
-    ): List<ClientResponseDTO>
+    ): Page<ClientResponseDTO>
 
     @SwaggerService
     fun deleteClient(@PathVariable id: Long)

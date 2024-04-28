@@ -4,6 +4,8 @@ import com.andersen.usermanager.controller.ClientController
 import com.andersen.usermanager.dto.request.ClientRequestDTO
 import com.andersen.usermanager.dto.response.ClientResponseDTO
 import com.andersen.usermanager.service.ClientServiceImpl
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -28,15 +30,15 @@ class ClientControllerImpl(var clientServiceImpl: ClientServiceImpl) : ClientCon
     }
 
     @GetMapping("/list")
-    override fun getClientList(): List<ClientResponseDTO> {
-        return clientServiceImpl.getAllClients()
+    override fun getClientList(pageable: Pageable): Page<ClientResponseDTO> {
+        return clientServiceImpl.getAllClients(pageable)
     }
 
     @GetMapping("/search/name")
-    override fun getClientListByName(
+    override fun getClientListByName(pageable: Pageable,
         @RequestParam firstname: String,
-        @RequestParam lastname: String): List<ClientResponseDTO> {
-        return clientServiceImpl.getClientsByNames(firstname, lastname)
+        @RequestParam lastname: String): Page<ClientResponseDTO> {
+        return clientServiceImpl.getClientsByNames(firstname, lastname, pageable)
     }
 
     @DeleteMapping("/{id}")

@@ -13,6 +13,8 @@ import com.andersen.usermanager.repository.ClientRepository
 import org.springframework.stereotype.Service
 import java.net.URL
 import org.json.JSONObject
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 
 @Service
@@ -123,9 +125,29 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
             }
     }
 
-    fun getAllClients(): List<ClientResponseDTO> {
-        val clients = clientRepository.findAll()
-        if (clients.isEmpty())
+//    fun getAllClients(): List<ClientResponseDTO> {
+//        val clients = clientRepository.findAll()
+//        if (clients.isEmpty())
+//            throw NoClientsExistException(
+//                ExceptionMessage.NO_CLIENTS_EXIST
+//                    .toString()
+//            )
+//        return clients.map {
+//            ClientResponseDTO(
+//                id = it.id!!,
+//                firstName = it.firstName,
+//                lastName = it.lastName,
+//                email = it.email,
+//                gender = it.gender,
+//                job = it.job,
+//                position = it.position
+//            )
+//        }
+//    }
+
+    fun getAllClients(pageable: Pageable): Page<ClientResponseDTO>{
+        val clients = clientRepository.findAll(pageable)
+        if (clients.isEmpty)
             throw NoClientsExistException(
                 ExceptionMessage.NO_CLIENTS_EXIST
                     .toString()
@@ -143,9 +165,9 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
         }
     }
 
-    fun getClientsByNames(firstName: String, lastName : String) : List<ClientResponseDTO>{
-        val clients = clientRepository.findByFirstNameAndLastName(firstName, lastName)
-        if (clients.isEmpty())
+    fun getClientsByNames(firstName: String, lastName : String, pageable: Pageable) : Page<ClientResponseDTO>{
+        val clients = clientRepository.findByFirstNameAndLastName(firstName, lastName, pageable)
+        if (clients.isEmpty)
             throw NoClientsExistException(
                 ExceptionMessage.NO_CLIENTS_EXIST
                     .toString()
@@ -163,6 +185,9 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
         }
     }
 
+//    fun getNextPage(page: Page<ClientResponseDTO>): Page<ClientResponseDTO> {
+//        return clientRepository.findAll(page.nextPageable())
+//    }
     @Transactional
     fun deleteClient(id: Long) {
         clientRepository.deleteById(id)
