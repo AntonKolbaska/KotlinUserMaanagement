@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ClientRepository : JpaRepository<Client, Long> {
-//    override fun findAll(pageable: Pageable): Page<Client>
     fun findByEmail(email: String): Client?
 
     @Query(

@@ -3,6 +3,11 @@ server:
 spring:
   application:
     name: user-manager
+  security:
+    jwt:
+      expiration: 600000
+      refresh-token:
+        expiration: 1800000
   jpa:
     generate-ddl: true
     defer-datasource-initialization: true
@@ -19,6 +24,9 @@ spring:
       enabled: true
       settings:
         web-allow-others: true
+
+secrets:
+  jwt-key: " ecaad53fd5073b6c5f5e588e8c3f1612a13fd4fb29785b8c2f492b19245ab54a"
 
 springdoc:
   swagger-ui:

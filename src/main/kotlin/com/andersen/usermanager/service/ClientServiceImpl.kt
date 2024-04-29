@@ -20,26 +20,26 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ClientServiceImpl(var clientRepository: ClientRepository) {
     @Transactional
-    fun createClient(newClientDTO: ClientRequestDTO): ClientResponseDTO {
-        val existingClient = clientRepository.findByEmail(newClientDTO.email)
+    fun createClient(client: ClientRequestDTO): ClientResponseDTO {
+        val existingClient = clientRepository.findByEmail(client.email)
         if (existingClient != null) {
             throw EmailAlreadyRegisteredException(
                 ExceptionMessage.EMAIL_ALREADY_USED
                     .toString()
-                    .format(newClientDTO.email)
+                    .format(client.email)
             )
         }
 
-        val gender = newClientDTO.gender ?: Gender.valueOf(defineClientGender(newClientDTO.firstName))
+        val gender = client.gender ?: Gender.valueOf(defineClientGender(client.firstName))
         val save = clientRepository.save(
             Client(
                 id = null,
-                firstName = newClientDTO.firstName,
-                lastName = newClientDTO.lastName,
-                email = newClientDTO.email,
+                firstName = client.firstName,
+                lastName = client.lastName,
+                email = client.email,
                 gender = gender,
-                job = newClientDTO.job,
-                position = newClientDTO.position
+                job = client.job,
+                position = client.position
             )
         )
         return ClientResponseDTO(
@@ -125,26 +125,6 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
             }
     }
 
-//    fun getAllClients(): List<ClientResponseDTO> {
-//        val clients = clientRepository.findAll()
-//        if (clients.isEmpty())
-//            throw NoClientsExistException(
-//                ExceptionMessage.NO_CLIENTS_EXIST
-//                    .toString()
-//            )
-//        return clients.map {
-//            ClientResponseDTO(
-//                id = it.id!!,
-//                firstName = it.firstName,
-//                lastName = it.lastName,
-//                email = it.email,
-//                gender = it.gender,
-//                job = it.job,
-//                position = it.position
-//            )
-//        }
-//    }
-
     fun getAllClients(pageable: Pageable): Page<ClientResponseDTO>{
         val clients = clientRepository.findAll(pageable)
         if (clients.isEmpty)
@@ -185,9 +165,6 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
         }
     }
 
-//    fun getNextPage(page: Page<ClientResponseDTO>): Page<ClientResponseDTO> {
-//        return clientRepository.findAll(page.nextPageable())
-//    }
     @Transactional
     fun deleteClient(id: Long) {
         clientRepository.deleteById(id)

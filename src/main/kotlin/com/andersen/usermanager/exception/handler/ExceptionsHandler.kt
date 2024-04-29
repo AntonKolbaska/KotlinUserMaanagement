@@ -4,6 +4,7 @@ import com.andersen.usermanager.exception.ClientNotFoundException
 import com.andersen.usermanager.exception.EmailAlreadyRegisteredException
 import com.andersen.usermanager.exception.GenderUndefinedException
 import com.andersen.usermanager.exception.NoClientsExistException
+import com.andersen.usermanager.exception.UserNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -17,8 +18,13 @@ class ExceptionsHandler {
     }
 
     @ExceptionHandler
+    fun handleUserNotFoundException(exception: UserNotFoundException): ResponseEntity<String> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.message)
+    }
+
+    @ExceptionHandler
     fun handleNoClientsExistException(exception: NoClientsExistException): ResponseEntity<String> {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(exception.message)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.message)
     }
 
     @ExceptionHandler
