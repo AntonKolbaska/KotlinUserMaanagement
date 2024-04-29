@@ -1,6 +1,8 @@
 package com.andersen.usermanager.configuration.security
 
-import com.andersen.usermanager.service.JwtServiceImpl
+import com.andersen.usermanager.service.impl.JwtServiceImpl
+import com.andersen.usermanager.util.ConstantsUtil.TOKEN_BEGIN_INDEX
+import com.andersen.usermanager.util.ConstantsUtil.TOKEN_IDENTIFIER
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -47,10 +49,5 @@ class JwtAuthenticationFilter(
         }
 
         filterChain.doFilter(request, response)
-    }
-
-    companion object {
-        private const val TOKEN_IDENTIFIER = "Bearer "
-        private const val TOKEN_BEGIN_INDEX = 7
     }
 }

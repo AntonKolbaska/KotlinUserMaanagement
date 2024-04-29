@@ -1,10 +1,11 @@
 package com.andersen.usermanager.controller.impl
 
+import com.andersen.usermanager.controller.UserController
 import com.andersen.usermanager.dto.request.AuthenticationRequestDTO
 import com.andersen.usermanager.dto.request.UserRequestDTO
 import com.andersen.usermanager.dto.response.AuthenticationResponseDTO
 import com.andersen.usermanager.dto.response.UserResponseDTO
-import com.andersen.usermanager.service.UserServiceImpl
+import com.andersen.usermanager.service.impl.UserServiceImpl
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,15 +14,15 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/user")
-class UserControllerImpl(var userService: UserServiceImpl) {
+class UserControllerImpl(var userService: UserServiceImpl) : UserController{
 
     @PostMapping("/create")
-    fun createUser(@RequestBody newUser: UserRequestDTO): UserResponseDTO {
+    override fun createUser(@RequestBody newUser: UserRequestDTO): UserResponseDTO {
         return userService.createUser(newUser)
     }
 
     @PostMapping("/authenticate")
-    fun authenticateUser(@RequestBody newUser: AuthenticationRequestDTO): AuthenticationResponseDTO {
+    override fun authenticateUser(@RequestBody newUser: AuthenticationRequestDTO): AuthenticationResponseDTO {
         return userService.authenticateUser(newUser)
     }
 }

@@ -21,4 +21,15 @@ interface ClientRepository : JpaRepository<Client, Long> {
         @Param("lastName") lastName: String,
         pageable: Pageable
     ): Page<Client>
+
+    @Query(
+        "SELECT c FROM clients c " +
+                "WHERE (c.firstName LIKE CONCAT(:firstName, '%') AND c.lastName LIKE CONCAT(:lastName, '%')) " +
+                "OR (c.lastName LIKE CONCAT(:firstName, '%') AND c.firstName LIKE CONCAT(:lastName, '%'))"
+    )
+    fun findBySearchString(
+        @Param("firstName") firstName: String,
+        @Param("lastName") lastName: String,
+        pageable: Pageable
+    ): Page<Client>
 }

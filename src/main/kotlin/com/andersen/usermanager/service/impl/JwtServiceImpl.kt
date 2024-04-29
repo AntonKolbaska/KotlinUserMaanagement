@@ -1,6 +1,6 @@
-package com.andersen.usermanager.service
+package com.andersen.usermanager.service.impl
 
-import com.andersen.usermanager.repository.UserRepository
+import com.andersen.usermanager.service.JwtService
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 @Service
-class JwtServiceImpl() {
+class JwtServiceImpl() : JwtService {
 
     @Value("\${secrets.jwt-key}")
     private lateinit var key: String
@@ -22,20 +22,20 @@ class JwtServiceImpl() {
     @Value("\${spring.security.jwt.expiration}")
     private var jwtExpiration: Long = 0
 
-    fun extractEmail(token: String): String {
+    override fun extractEmail(token: String): String {
         return extractClaim(token) { claims -> claims.subject }
     }
 
-    fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
+    override fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
         val claims = extractAllClaims(token)
         return claimsResolver.invoke(claims)
     }
 
-    fun generateToken(userDetails: UserDetails): String {
+    override fun generateToken(userDetails: UserDetails): String {
         return generateToken(HashMap(), userDetails)
     }
 
-    fun generateToken(extraClaims: Map<String, Any>, userDetails: UserDetails): String {
+    override fun generateToken(extraClaims: Map<String, Any>, userDetails: UserDetails): String {
         return buildToken(extraClaims, userDetails, jwtExpiration)
     }
 
@@ -53,7 +53,7 @@ class JwtServiceImpl() {
             .compact()
     }
 
-    fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
+    override fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
         return extractEmail(token) == userDetails.username && !isTokenExpired(token)
     }
 

@@ -1,4 +1,4 @@
-package com.andersen.usermanager.service
+package com.andersen.usermanager.service.impl
 
 import com.andersen.usermanager.dto.request.ClientRequestDTO
 import com.andersen.usermanager.dto.response.ClientResponseDTO
@@ -6,21 +6,19 @@ import com.andersen.usermanager.entity.Client
 import com.andersen.usermanager.entity.Gender
 import com.andersen.usermanager.exception.ClientNotFoundException
 import com.andersen.usermanager.exception.EmailAlreadyRegisteredException
-import com.andersen.usermanager.exception.GenderUndefinedException
-import com.andersen.usermanager.exception.NoClientsExistException
 import com.andersen.usermanager.exception.message.ExceptionMessage
 import com.andersen.usermanager.repository.ClientRepository
+import com.andersen.usermanager.service.ClientService
 import org.springframework.stereotype.Service
-import java.net.URL
-import org.json.JSONObject
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class ClientServiceImpl(var clientRepository: ClientRepository) {
+class ClientServiceImpl(var clientRepository: ClientRepository,
+                        var genderApiServiceImpl: GenderApiServiceImpl) : ClientService {
     @Transactional
-    fun createClient(client: ClientRequestDTO): ClientResponseDTO {
+    override fun createClient(client: ClientRequestDTO): ClientResponseDTO {
         val existingClient = clientRepository.findByEmail(client.email)
         if (existingClient != null) {
             throw EmailAlreadyRegisteredException(
@@ -30,7 +28,7 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
             )
         }
 
-        val gender = client.gender ?: Gender.valueOf(defineClientGender(client.firstName))
+        val gender = client.gender ?: Gender.valueOf(genderApiServiceImpl.defineClientGender(client.firstName))
         val save = clientRepository.save(
             Client(
                 id = null,
@@ -54,7 +52,7 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
     }
 
     @Transactional
-    fun updateClient(clientId: Long, clientDTO: ClientRequestDTO): ClientResponseDTO {
+    override fun updateClient(clientId: Long, clientDTO: ClientRequestDTO): ClientResponseDTO {
         val existingClient = clientRepository.findById(clientId)
             .orElseThrow {
             ClientNotFoundException(
@@ -85,7 +83,8 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
         }
 
         if (originalFirstName != clientDTO.firstName) {
-            val gender = clientDTO.gender ?: Gender.valueOf(defineClientGender(clientDTO.firstName))
+            val gender = clientDTO.gender ?: Gender.valueOf(
+                genderApiServiceImpl.defineClientGender(clientDTO.firstName))
             existingClient.gender = gender
         } else {
             existingClient.gender = originalGender
@@ -104,7 +103,7 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
         )
     }
 
-    fun getClient(id: Long): ClientResponseDTO? {
+    override fun getClient(id: Long): ClientResponseDTO {
         return clientRepository.findById(id)
             .map {
                 ClientResponseDTO(
@@ -125,13 +124,8 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
             }
     }
 
-    fun getAllClients(pageable: Pageable): Page<ClientResponseDTO>{
+    override fun getAllClients(pageable: Pageable): Page<ClientResponseDTO>{
         val clients = clientRepository.findAll(pageable)
-        if (clients.isEmpty)
-            throw NoClientsExistException(
-                ExceptionMessage.NO_CLIENTS_EXIST
-                    .toString()
-            )
         return clients.map {
             ClientResponseDTO(
                 id = it.id!!,
@@ -145,13 +139,27 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
         }
     }
 
-    fun getClientsByNames(firstName: String, lastName : String, pageable: Pageable) : Page<ClientResponseDTO>{
+    override fun getClientsByNames(firstName: String, lastName : String, pageable: Pageable) : Page<ClientResponseDTO>{
         val clients = clientRepository.findByFirstNameAndLastName(firstName, lastName, pageable)
-        if (clients.isEmpty)
-            throw NoClientsExistException(
-                ExceptionMessage.NO_CLIENTS_EXIST
-                    .toString()
+        return clients.map {
+            ClientResponseDTO(
+                id = it.id!!,
+                firstName = it.firstName,
+                lastName = it.lastName,
+                email = it.email,
+                gender = it.gender,
+                job = it.job,
+                position = it.position
             )
+        }
+    }
+
+    override fun findClientsByString(search: String, pageable: Pageable): Page<ClientResponseDTO> {
+        val firstSearchSubstring = "%${search.split(" ").first()}%"
+        val lastSearchSubstring = "%${search.split(" ").last()}%"
+
+        val clients = clientRepository.findBySearchString(firstSearchSubstring, lastSearchSubstring, pageable)
+
         return clients.map {
             ClientResponseDTO(
                 id = it.id!!,
@@ -166,24 +174,7 @@ class ClientServiceImpl(var clientRepository: ClientRepository) {
     }
 
     @Transactional
-    fun deleteClient(id: Long) {
+    override fun deleteClient(id: Long) {
         clientRepository.deleteById(id)
-    }
-
-    private fun defineClientGender(firstName: String): String {
-        val apiUrl = "https://api.genderize.io/?name=$firstName"
-        val response = URL(apiUrl).readText()
-        val json = JSONObject(response)
-        val probability = json.getDouble("probability")
-
-        if (probability >= 0.8) {
-            return json.getString("gender").uppercase()
-        } else {
-            throw GenderUndefinedException(
-                ExceptionMessage.GENDER_NOT_DEFINED
-                    .toString()
-                    .format(firstName)
-            )
-        }
     }
 }

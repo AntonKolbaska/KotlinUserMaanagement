@@ -3,7 +3,7 @@ package com.andersen.usermanager.controller.impl
 import com.andersen.usermanager.controller.ClientController
 import com.andersen.usermanager.dto.request.ClientRequestDTO
 import com.andersen.usermanager.dto.response.ClientResponseDTO
-import com.andersen.usermanager.service.ClientServiceImpl
+import com.andersen.usermanager.service.impl.ClientServiceImpl
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -39,6 +39,12 @@ class ClientControllerImpl(var clientServiceImpl: ClientServiceImpl) : ClientCon
         @RequestParam firstname: String,
         @RequestParam lastname: String): Page<ClientResponseDTO> {
         return clientServiceImpl.getClientsByNames(firstname, lastname, pageable)
+    }
+
+    @GetMapping("/search/string")
+    override fun getClientListBySearchString(pageable: Pageable,
+                                     @RequestParam searchString: String): Page<ClientResponseDTO> {
+        return clientServiceImpl.findClientsByString(searchString, pageable)
     }
 
     @DeleteMapping("/{id}")

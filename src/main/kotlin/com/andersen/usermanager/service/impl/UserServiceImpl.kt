@@ -1,4 +1,4 @@
-package com.andersen.usermanager.service
+package com.andersen.usermanager.service.impl
 
 import com.andersen.usermanager.dto.request.AuthenticationRequestDTO
 import com.andersen.usermanager.dto.request.UserRequestDTO
@@ -9,6 +9,7 @@ import com.andersen.usermanager.exception.EmailAlreadyRegisteredException
 import com.andersen.usermanager.exception.UserNotFoundException
 import com.andersen.usermanager.exception.message.ExceptionMessage
 import com.andersen.usermanager.repository.UserRepository
+import com.andersen.usermanager.service.UserService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -19,10 +20,10 @@ import org.springframework.transaction.annotation.Transactional
 class UserServiceImpl(
     var userRepository: UserRepository, var authenticationManager: AuthenticationManager,
     var passwordEncoder: PasswordEncoder, var jwtServiceImpl: JwtServiceImpl
-) {
+) : UserService {
 
     @Transactional
-    fun createUser(user: UserRequestDTO): UserResponseDTO {
+    override fun createUser(user: UserRequestDTO): UserResponseDTO {
         val existingUser = userRepository.findByEmail(user.email)
         if (existingUser != null) {
             throw EmailAlreadyRegisteredException(
@@ -45,7 +46,7 @@ class UserServiceImpl(
         )
     }
 
-    fun authenticateUser(request: AuthenticationRequestDTO): AuthenticationResponseDTO {
+    override fun authenticateUser(request: AuthenticationRequestDTO): AuthenticationResponseDTO {
         authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(request.email, request.password)
         )
