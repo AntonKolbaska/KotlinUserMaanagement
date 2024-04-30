@@ -1,8 +1,11 @@
 package com.andersen.usermanager.data
 
+import com.andersen.usermanager.dto.request.AuthenticationRequestDTO
 import com.andersen.usermanager.dto.request.ClientRequestDTO
+import com.andersen.usermanager.dto.request.UserRequestDTO
 import com.andersen.usermanager.entity.Client
 import com.andersen.usermanager.entity.Gender
+import com.andersen.usermanager.entity.User
 
 object TestDataFactory {
 
@@ -49,6 +52,20 @@ object TestDataFactory {
             gender = Gender.MALE,
             job = "Software Engineer",
             position = "Senior Developer"
+        )
+    }
+
+    fun createUserRequestDTO(): UserRequestDTO {
+        return UserRequestDTO(
+            email = "johndoe@example.com",
+            password = "password"
+        )
+    }
+
+    fun createAuthenticationRequestDTO(): AuthenticationRequestDTO {
+        return AuthenticationRequestDTO(
+            email = "johndoe@example.com",
+            password = "password"
         )
     }
 
