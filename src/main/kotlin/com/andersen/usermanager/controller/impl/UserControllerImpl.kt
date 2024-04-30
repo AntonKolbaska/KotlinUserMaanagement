@@ -6,6 +6,7 @@ import com.andersen.usermanager.dto.request.UserRequestDTO
 import com.andersen.usermanager.dto.response.AuthenticationResponseDTO
 import com.andersen.usermanager.dto.response.UserResponseDTO
 import com.andersen.usermanager.service.impl.UserServiceImpl
+import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController
 class UserControllerImpl(var userService: UserServiceImpl) : UserController{
 
     @PostMapping("/create")
-    override fun createUser(@RequestBody newUser: UserRequestDTO): UserResponseDTO {
+    override fun createUser(@Valid @RequestBody newUser: UserRequestDTO): UserResponseDTO {
         return userService.createUser(newUser)
     }
 
     @PostMapping("/authenticate")
-    override fun authenticateUser(@RequestBody newUser: AuthenticationRequestDTO): AuthenticationResponseDTO {
+    override fun authenticateUser(@Valid @RequestBody newUser: AuthenticationRequestDTO): AuthenticationResponseDTO {
         return userService.authenticateUser(newUser)
     }
 }
